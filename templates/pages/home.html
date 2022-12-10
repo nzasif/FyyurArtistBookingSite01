@@ -1,0 +1,58 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Fyyur{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-sm-6">
+		<h1>Fyyur 🔥</h1>
+		<p class="lead">Where musical artists meet musical venues.</p>
+		<h3>
+			<a href="/venues"><button class="btn btn-primary btn-lg">Find a venue</button></a>
+			<a href="/venues/create"><button class="btn btn-default btn-lg">Post a venue</button></a>
+		</h3>
+		<h3>
+			<a href="/artists"><button class="btn btn-primary btn-lg">Find an artist</button></a>
+			<a href="/artists/create"><button class="btn btn-default btn-lg">Post an artist</button></a>
+		</h3>
+		<p class="lead">Publicize about your show for free.</p>
+		<h3>
+			<a href="/show/search"><button class="btn btn-primary btn-lg">Find a show</button></a>
+			<a href="/shows/create"><button class="btn btn-default btn-lg">Post a show</button></a>
+		</h3>
+	</div>
+	<div class="col-sm-6 hidden-sm hidden-xs">
+		<div class="row">
+			<h3>New artists</h3>
+			{% for artist in artists %}
+			<div class="col-sm-4">
+				<div class="thumbnail">
+					<a href="/artists/{{artist.id}}">
+					  <img src="{{artist.image_link}}" alt="Lights" style="width:100%">
+					  <div class="caption">
+						<p>{{ artist.name }}</p>
+						<p><small>{{ artist.city + " , " + artist.state}}</small></p>
+					  </div>
+					</a>
+				  </div>
+				</div>
+			{% endfor %}
+		</div>
+
+		<div class="row">
+			<h3>New Venues</h3>
+			{% for venue in venues %}
+			<div class="col-sm-4">
+				<div class="thumbnail">
+					<a href="/venue/{{venue.id}}">
+					  <img src="{{venue.image_link}}" alt="Lights" style="width:100%">
+					  <div class="caption">
+						<p>{{ venue.name }}</p>
+						<p><small>{{ venue.city + " , " + venue.state}}</small></p>
+					  </div>
+					</a>
+				  </div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock %}
