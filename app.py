@@ -677,19 +677,23 @@ def shows():
   #   "start_time": "2035-04-15T20:00:00.000Z"
   # }]
   #endregion
-  shows = Show.query.order_by(db.desc(Show.start_time))
-  data = []
-  for show in shows:
-    data.append({
-        "venue_id": show.venue_id,
-        "venue_name": show.venue.name,
-        "artist_id": show.artist_id,
-        "artist_name": show.artist.name,
-        "artist_image_link": show.artist.image_link,
-        "start_time": format_datetime(str(show.start_time))
-    })
-
-  return render_template('pages/shows.html', shows=data)
+  try:
+    shows = Show.query.order_by(db.desc(Show.start_time))
+    data = []
+    for show in shows:
+      data.append({
+          "id": show.id,
+          "venue_id": show.venue_id,
+          "venue_name": show.venue.name,
+          "artist_id": show.artist_id,
+          "artist_name": show.artist.name,
+          "artist_image_link": show.artist.image_link,
+          "start_time": format_datetime(str(show.start_time))
+      })
+    return render_template('pages/shows.html', shows=data)
+  except:
+    flash('some error occured.')
+    return redirect(url_for("index"))
 
 @app.route('/show/search')
 def show():
@@ -701,6 +705,9 @@ def search_show():
   search_by = request.form.get('search_by')
   shows = []
   data = []
+
+  if search_by == 'show' or search_term == '':
+    shows = Show.query.filter(Show.name.ilike(f'%{search_term}%')).all()
 
   if search_by == 'artist':
     shows = Show.query.join(Artist, Show.artist_id == Artist.id)\
@@ -760,6 +767,25 @@ def create_show_submission():
     db.session.close()
   return redirect(url_for('index'))
 
+@app.route('/shows/<show_id>/delete')
+def delete_show(show_id):
+  try:
+    # Get show by ID
+    show = Show.query.get(show_id)
+    show_name = show.name
+
+    db.session.delete(show)
+    db.session.commit()
+
+    flash('Show ' + show_name + ' was deleted')
+  except:
+    flash('an error occured and Show ' + show_name + ' was not deleted.')
+    db.session.rollback()
+  finally:
+    db.session.close()
+
+  return redirect(url_for('shows'))  
+
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('errors/404.html'), 404
@@ -767,7 +793,6 @@ def not_found_error(error):
 @app.errorhandler(500)
 def server_error(error):
     return render_template('errors/500.html'), 500
-
 
 if not app.debug:
     file_handler = FileHandler('error.log')
