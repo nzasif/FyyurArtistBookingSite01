@@ -5,6 +5,10 @@ from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
 from wtforms.validators import DataRequired, AnyOf, URL, regexp
 
 class ShowForm(Form):
+    name = StringField(
+        "Show Name", validators=[DataRequired()]
+    )
+
     artist_id = SelectField(
         'artist_id', validate_choice=[DataRequired()],
         choices=[]
